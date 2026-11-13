@@ -496,6 +496,14 @@ def picnic(cx, cy, s):
          (220, 220, 220))
 
 
+def draw_dew():
+    """Morning dew: tiny bright dots scattered on the meadow grass."""
+    for _ in range(60):
+        x = rng.uniform(15, W - 15)
+        y = rng.uniform(770, 1015)
+        fill_circle(x, y, 1.8, (255, 255, 255))
+
+
 def draw():
     draw_sky()
     draw_rainbow()
@@ -505,6 +513,7 @@ def draw():
     kite(640, 150, 1.0)
     draw_hills()
     draw_flowers()
+    draw_dew()
     picnic(680, 895, 1.25)
     bunny(320, 885, 1.25)
     draw_balloons()
@@ -525,9 +534,9 @@ def png_chunk(kind, data):
 def encode_png():
     """Encode the RGB canvas as a PNG (colour type 2, 8-bit).
 
-    Each row gets the smallest of filters None/Sub/Up by the usual
-    sum-of-absolute-values heuristic, then one zlib stream at level 9.
-    Fully deterministic for a fixed canvas.
+    Each row gets the smallest of filters None/Sub/Up/Average/Paeth
+    by the usual sum-of-absolute-values heuristic, then one zlib
+    stream at level 9. Fully deterministic for a fixed canvas.
     """
     ihdr = struct.pack(">IIBBBBB", W, H, 8, 2, 0, 0, 0)
     raw = bytearray()
@@ -544,6 +553,21 @@ def encode_png():
         for i in range(len(up)):
             up[i] = (up[i] - prev[i]) & 0xFF
         cands.append((2, bytes(up)))
+        avg = bytearray(row)
+        for i in range(len(avg)):
+            left = row[i - 3] if i >= 3 else 0
+            avg[i] = (avg[i] - ((left + prev[i]) // 2)) & 0xFF
+        cands.append((3, bytes(avg)))
+        paeth = bytearray(row)
+        for i in range(len(paeth)):
+            a = row[i - 3] if i >= 3 else 0
+            b = prev[i]
+            c = prev[i - 3] if i >= 3 else 0
+            p = a + b - c
+            pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+            pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+            paeth[i] = (paeth[i] - pr) & 0xFF
+        cands.append((4, bytes(paeth)))
 
         def cost(b):
             return sum(v if v < 128 else 256 - v for v in b)
