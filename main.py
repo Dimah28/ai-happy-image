@@ -496,6 +496,42 @@ def picnic(cx, cy, s):
          (220, 220, 220))
 
 
+def snail(cx, cy, s):
+    """A garden snail with a smiling spiral shell, crawling along
+    the bottom of the hill."""
+    # body: a low slug curve
+    fill_circle(cx - 6 * s, cy, 12 * s, (150, 110, 80))
+    fill_circle(cx + 12 * s, cy, 10 * s, (150, 110, 80))
+    fill_circle(cx + 22 * s, cy - 4 * s, 9 * s, (150, 110, 80))
+    # head with two eye stalks
+    fill_circle(cx + 28 * s, cy - 10 * s, 7 * s, (150, 110, 80))
+    line(cx + 26 * s, cy - 14 * s, cx + 24 * s, cy - 24 * s, 2.5,
+         (150, 110, 80))
+    line(cx + 30 * s, cy - 14 * s, cx + 32 * s, cy - 24 * s, 2.5,
+         (150, 110, 80))
+    fill_circle(cx + 24 * s, cy - 25 * s, 2.5, FACE)
+    fill_circle(cx + 32 * s, cy - 25 * s, 2.5, FACE)
+    # smile
+    arc(cx + 28 * s, cy - 10 * s, 4 * s, math.pi * 0.2, math.pi * 0.8,
+        2, FACE)
+    # spiral shell: concentric arcs in warm brown
+    fill_circle(cx - 8 * s, cy - 12 * s, 16 * s, (190, 130, 70))
+    ring(cx - 8 * s, cy - 12 * s, 11, 3, (120, 80, 40))
+    ring(cx - 8 * s, cy - 12 * s, 6, 3, (120, 80, 40))
+    fill_circle(cx - 8 * s, cy - 12 * s, 2.5, (120, 80, 40))
+
+
+def ladybug(cx, cy, s):
+    """A tiny ladybug resting on a daisy petal."""
+    fill_circle(cx, cy, 7 * s, (220, 60, 60))
+    line(cx, cy - 7 * s, cx, cy + 7 * s, 2, FACE)
+    fill_circle(cx - 3 * s, cy - 3 * s, 1.8, FACE)
+    fill_circle(cx + 3 * s, cy - 3 * s, 1.8, FACE)
+    fill_circle(cx - 3 * s, cy + 3 * s, 1.8, FACE)
+    fill_circle(cx + 3 * s, cy + 3 * s, 1.8, FACE)
+    fill_circle(cx, cy - 8 * s, 2.5, FACE)
+
+
 def draw_dew():
     """Morning dew: tiny bright dots scattered on the meadow grass."""
     for _ in range(60):
@@ -514,6 +550,8 @@ def draw():
     draw_hills()
     draw_flowers()
     draw_dew()
+    snail(520, 985, 1.0)
+    ladybug(248, 806, 1.0)
     picnic(680, 895, 1.25)
     bunny(320, 885, 1.25)
     draw_balloons()
